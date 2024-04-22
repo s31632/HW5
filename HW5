@@ -1,0 +1,148 @@
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+public class Main {
+public static void main(String[] args) {
+Student s = new Student();
+s.firstName="Kale";
+s.lastName="Blajik";
+s.email="sxxxxx";
+s.address="Modzelezkieogo";
+s.indexNumber="s1";
+s.phoneNumber="086424567";
+class Student {
+    private static int nextIndexNumber = 1;
+    private int indexNumber;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String address;
+    private String phoneNumber;
+    private String status;
+    private List<Studies> studiesList;
+    private List<Grade> grades;
+    public Student(String firstName, String lastName, String email, String address, String phoneNumber, Date birthDate) {
+        this.indexNumber = nextIndexNumber++;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.status = "Candidate"; // Initially set as Candidate
+        this.studiesList = new ArrayList<>();
+        this.grades = new ArrayList<>();
+    }
+    public void enrollStudent(Studies studies) {
+        studiesList.add(studies);
+    }
+    public void addGrade(int grade, String subject) {
+        grades.add(new Grade(grade, subject));
+    }
+    public void promoteToNextSemester() {
+        for (Studies studies : studiesList) {
+            if (studies.getProgramName().equals("IT")) { // Check if it's PGO program
+                int itns = 0; // Number of ITN's
+                for (Grade grade : grades) {
+                    if (grade.getSubject().equals("IT")) { // Check if it's an PGO subject
+                        itns++;
+                    }
+                }
+                if (itns >= studies.getMaxITNsAllowed()) {
+                    System.out.println("Student " + firstName + " " + lastName + " exceeded maximum ITNs allowed.");
+                    return;
+                }
+            }
+            if (studies.getNumberOfSemesters() > getCurrentSemester()) {
+                setCurrentSemester(getCurrentSemester() + 1);
+            } else {
+                setStatus("Graduate");
+            }
+        }
+    }
+    public void displayInfo() {
+        System.out.println("Name: " + firstName + " " + lastName);
+        System.out.println("Index Number: " + indexNumber);
+        System.out.println("Email: " + email);
+        System.out.println("Address: " + address);
+        System.out.println("Phone Number: " + phoneNumber);
+        System.out.println("Current Semester: " + getCurrentSemester());
+        System.out.println("Status: " + status);
+        System.out.println("Studies:");
+        for (Studies studies : studiesList) {
+            System.out.println("- " + studies.getProgramName());
+        }
+    }
+    public int getCurrentSemester() {
+        int maxSemester = 0;
+        for (Studies studies : studiesList) {
+            if (studies.getNumberOfSemesters() > maxSemester) {
+                maxSemester = studies.getNumberOfSemesters();
+            }
+        }
+        return maxSemester;
+    }
+    public int getIndexNumber() {
+        return indexNumber;
+    }
+    public String getStatus() {
+        return status;
+    }
+    public void setStatus(String status) {
+        this.status = status;
+    }
+    public void setCurrentSemester(int currentSemester) {
+        // Additional validation if necessary
+        this.status = "Student"; // Once enrolled, status changes to "Student"
+    }
+}
+class Studies {
+    private String programName;
+    private String description;
+    private int numberOfSemesters;
+    private int maxITNsAllowed;
+    public Studies(String programName, String description, int numberOfSemesters, int maxITNsAllowed) {
+        this.programName = programName;
+        this.description = description;
+        this.numberOfSemesters = numberOfSemesters;
+        this.maxITNsAllowed = maxITNsAllowed;
+    }
+    public String getProgramName() {
+        return programName;
+    }
+    public int getNumberOfSemesters() {
+        return numberOfSemesters;
+    }
+    public int getMaxITNsAllowed() {
+        return maxITNsAllowed;
+    }
+}
+class Grade {
+    private int grade;
+    private String subject;
+    public Grade(int grade, String subject) {
+        this.grade = grade;
+        this.subject = subject;
+    }
+    public int getGrade() {
+        return grade;
+    }
+    public String getSubject() {
+        return subject;
+    }
+}
+class Students {
+    private static List<Student> studentList = new ArrayList<>();
+    public static void promoteAllStudents() {
+        for (Student student : studentList) {
+            student.promoteToNextSemester();
+        }
+    }
+    public static void displayInfoAboutAllStudents() {
+        for (Student student : studentList) {
+            student.displayInfo();
+        }
+    }
+    public static void addStudent(Student student) {
+        studentList.add(student);
+    }
+}
